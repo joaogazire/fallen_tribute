@@ -10,6 +10,6 @@
     "serve": "npx http-server . -p 8080"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^4.3.3"
   }
 }
