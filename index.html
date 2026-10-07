@@ -21,76 +21,94 @@
     <link rel="preconnect" href="https://www.youtube-nocookie.com">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-csdark text-white min-h-screen flex flex-col font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-csdark to-black">
+<body class="bg-black text-white h-screen overflow-hidden font-sans select-none">
 
-    <main class="flex-grow flex flex-col items-center justify-center w-full max-w-5xl mx-auto px-4 pt-8 pb-24">
-
-        <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-6xl font-extrabold uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-csblue to-blue-500 mb-2 drop-shadow-lg">
-                Gabriel "FalleN" Toledo
-            </h1>
-            <p class="text-gray-400 text-lg md:text-xl tracking-wider">
-                Verdadeiro | Professor
-            </p>
+    <!-- Vídeo de fundo: cobre a tela inteira (cover) e não captura cliques -->
+    <div aria-hidden="true" class="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[1.15] w-[max(100vw,177.78vh)] h-[max(100vh,56.25vw)]">
+            <div id="videoPlayer" class="w-full h-full"></div>
         </div>
+    </div>
+    <!-- Escurece o vídeo para o contador ficar legível -->
+    <div aria-hidden="true" class="fixed inset-0 pointer-events-none bg-black/50 bg-[radial-gradient(ellipse_at_center,_transparent_20%,_rgba(0,0,0,0.75)_100%)]"></div>
 
-        <div role="timer" aria-label="Contagem regressiva até 20 de dezembro de 2026" class="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
-                <span class="block text-3xl md:text-5xl font-bold text-csblue" id="days">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Dias</span>
+    <main class="relative h-full flex flex-col items-center justify-center px-4 text-center">
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-[0.3em] text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mb-6 md:mb-10">
+            Gabriel "FalleN" Toledo
+        </h1>
+
+        <div role="timer" aria-label="Contagem regressiva até 20 de dezembro de 2026" class="flex items-start justify-center gap-1.5 min-[400px]:gap-3 sm:gap-6 md:gap-10 tabular-nums drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+            <div>
+                <span class="block text-5xl sm:text-8xl md:text-9xl font-black leading-none text-csblue" id="days">00</span>
+                <span class="block text-[0.6rem] sm:text-xs md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-300 mt-2">Dias</span>
             </div>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
-                <span class="block text-3xl md:text-5xl font-bold text-csblue" id="hours">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Horas</span>
+            <span aria-hidden="true" class="text-3xl sm:text-7xl md:text-8xl font-black leading-none text-white/40">:</span>
+            <div>
+                <span class="block text-5xl sm:text-8xl md:text-9xl font-black leading-none text-csblue" id="hours">00</span>
+                <span class="block text-[0.6rem] sm:text-xs md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-300 mt-2">Horas</span>
             </div>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
-                <span class="block text-3xl md:text-5xl font-bold text-csblue" id="minutes">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Minutos</span>
+            <span aria-hidden="true" class="text-3xl sm:text-7xl md:text-8xl font-black leading-none text-white/40">:</span>
+            <div>
+                <span class="block text-5xl sm:text-8xl md:text-9xl font-black leading-none text-csblue" id="minutes">00</span>
+                <span class="block text-[0.6rem] sm:text-xs md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-300 mt-2">Min</span>
             </div>
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
-                <span class="block text-3xl md:text-5xl font-bold text-csblue" id="seconds">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Segundos</span>
+            <span aria-hidden="true" class="text-3xl sm:text-7xl md:text-8xl font-black leading-none text-white/40">:</span>
+            <div>
+                <span class="block text-5xl sm:text-8xl md:text-9xl font-black leading-none text-csblue" id="seconds">00</span>
+                <span class="block text-[0.6rem] sm:text-xs md:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gray-300 mt-2">Seg</span>
             </div>
         </div>
-        <p id="countdown-message" role="status" hidden class="text-csblue text-xl md:text-2xl font-bold uppercase tracking-widest mb-8 -mt-4">
+        <p id="countdown-message" role="status" hidden class="text-csblue text-xl md:text-3xl font-bold uppercase tracking-widest mt-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             Hoje é o dia!
         </p>
-
-        <p id="match" class="text-gray-300 text-sm md:text-base text-center mb-3 max-w-4xl" aria-live="polite"></p>
-
-        <div class="w-full max-w-4xl relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-white/10 ring-1 ring-white/5">
-            <div id="videoPlayer" class="absolute top-0 left-0 w-full h-full"></div>
-            <div class="absolute left-3 bottom-3 right-3 flex items-center gap-2">
-                <button id="playPauseBtn" type="button" aria-label="Pausar vídeo" class="bg-black/40 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
-                    <svg data-icon="pause" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-                    <svg data-icon="play" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
-                </button>
-                <button id="muteBtn" type="button" aria-label="Ativar som" aria-pressed="false" class="bg-black/40 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
-                    <svg data-icon="muted" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg>
-                    <svg data-icon="sound" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
-                </button>
-                <button id="nextVideoBtn" type="button" class="ml-auto bg-black/40 hover:bg-white/20 disabled:opacity-50 text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm backdrop-blur-md">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4l11 8-11 8zM17 4h3v16h-3z"/></svg>
-                    Próximo
-                </button>
-            </div>
-        </div>
     </main>
 
-    <footer class="fixed bottom-0 left-0 w-full h-14 border-t border-gray-800 bg-gray-950/90 backdrop-blur-md z-50 grid grid-cols-3 items-center px-4">
-        <div></div>
+    <!-- Legenda do clipe e dica de uso -->
+    <div class="fixed left-0 right-0 bottom-16 px-4 text-center pointer-events-none">
+        <p id="match" class="text-gray-200 text-xs md:text-sm drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]" aria-live="polite"></p>
+        <p class="text-gray-400 text-[0.65rem] md:text-xs uppercase tracking-[0.25em] mt-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]">
+            Clique ou pressione → para o próximo clipe
+        </p>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 w-full h-14 bg-gradient-to-t from-black/80 to-transparent z-50 grid grid-cols-3 items-center px-4">
+        <div class="flex items-center gap-2">
+            <button id="playPauseBtn" type="button" aria-label="Pausar vídeo" class="bg-black/50 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
+                <svg data-icon="pause" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                <svg data-icon="play" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
+            </button>
+            <button id="muteBtn" type="button" aria-label="Ativar som" aria-pressed="false" class="bg-black/50 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
+                <svg data-icon="muted" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg>
+                <svg data-icon="sound" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
+            </button>
+        </div>
         <nav aria-label="Links externos" class="flex items-center justify-center gap-6">
-            <a href="https://www.youtube.com/@fallenINSIDER" target="_blank" rel="noopener noreferrer" aria-label="Canal do FalleN no YouTube" class="text-gray-400 hover:text-[#FF0000] transition-colors transform hover:scale-110 duration-200">
-                <svg class="w-8 h-8 md:w-9 md:h-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+            <a href="https://www.youtube.com/@fallenINSIDER" target="_blank" rel="noopener noreferrer" aria-label="Canal do FalleN no YouTube" class="text-gray-300 hover:text-[#FF0000] transition-colors transform hover:scale-110 duration-200">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
             </a>
-            <a href="https://www.hltv.org/player/2023/fallen" target="_blank" rel="noopener noreferrer" aria-label="Perfil do FalleN na HLTV" class="text-gray-400 hover:text-[#2a629c] transition-colors text-base md:text-lg font-bold transform hover:scale-110 duration-200">
+            <a href="https://www.hltv.org/player/2023/fallen" target="_blank" rel="noopener noreferrer" aria-label="Perfil do FalleN na HLTV" class="text-gray-300 hover:text-[#2a629c] transition-colors text-base md:text-lg font-bold transform hover:scale-110 duration-200">
                 HLTV
             </a>
         </nav>
-        <div class="text-right text-gray-400 text-xs md:text-sm font-mono tracking-tight">
+        <div class="text-right text-gray-300 text-xs md:text-sm font-mono tracking-tight">
             made by <a href="https://github.com/joaogazire" target="_blank" rel="noopener noreferrer" class="text-csblue hover:underline">@joaogazire</a>
         </div>
     </footer>
+
+    <!-- Mira de AWP que substitui o cursor -->
+    <div id="scope" aria-hidden="true" class="scope hidden">
+        <svg viewBox="0 0 160 160" width="160" height="160" fill="none" stroke="#fff" stroke-linecap="butt">
+            <circle cx="80" cy="80" r="52" stroke-width="2.5"/>
+            <circle cx="80" cy="80" r="46" stroke-width="0.75" opacity="0.5"/>
+            <!-- fios finos que cruzam a lente -->
+            <path d="M80 28v44M80 88v44M28 80h44M88 80h44" stroke-width="1"/>
+            <!-- barras grossas fora da lente -->
+            <path d="M80 0v26M80 134v26M0 80h26M134 80h26" stroke-width="4"/>
+            <!-- marcações de distância (mil-dots) -->
+            <path d="M80 100v0M80 112v0M100 80v0M112 80v0M60 80v0M48 80v0" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="80" cy="80" r="1.8" fill="#ff2a2a" stroke="none"/>
+        </svg>
+    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>

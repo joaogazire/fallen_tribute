@@ -2,9 +2,11 @@ let player = null;
 let pending = null;
 let currentVideoId = null;
 let muted = true;
+let onEnded = () => {};
 
 const matchEl = () => document.getElementById('match');
 
+export const setOnEnded = fn => { onEnded = fn; };
 export const getCurrentVideoId = () => currentVideoId;
 
 function syncButtons(state) {
@@ -28,6 +30,7 @@ function onStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         try { player.setPlaybackQuality('highres'); } catch { /* qualidade é só uma sugestão */ }
     }
+    if (event.data === YT.PlayerState.ENDED) onEnded();
     syncButtons(event.data);
 }
 
@@ -46,7 +49,7 @@ window.onYouTubeIframeAPIReady = () => {
         height: '100%',
         width: '100%',
         host: 'https://www.youtube-nocookie.com',
-        playerVars: { autoplay: 1, rel: 0, modestbranding: 1, controls: 0, playsinline: 1, fs: 0 },
+        playerVars: { autoplay: 1, rel: 0, modestbranding: 1, controls: 0, playsinline: 1, fs: 0, disablekb: 1, iv_load_policy: 3 },
         events: { onReady: onReady, onStateChange: onStateChange }
     });
 };
