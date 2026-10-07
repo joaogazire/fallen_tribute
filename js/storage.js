@@ -15,3 +15,19 @@ export function setList(key, data) {
         // sem persistência: o site continua funcionando
     }
 }
+
+export function getValue(key) {
+    try {
+        return localStorage.getItem(key);
+    } catch {
+        return null;
+    }
+}
+
+export function setValue(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch {
+        // sem persistência: o site continua funcionando
+    }
+}
