@@ -2,6 +2,7 @@ let player = null;
 let pending = null;
 let currentVideoId = null;
 let muted = true;
+let volume = 100;
 let onEnded = () => {};
 let playingWaiters = [];
 
@@ -15,6 +16,7 @@ export const whenPlaying = (timeout = 1500) => new Promise(resolve => {
 });
 
 export const getCurrentVideoId = () => currentVideoId;
+export const isSoundOn = () => !muted;
 
 function syncButtons(state) {
     const playing = state === YT.PlayerState.PLAYING;
@@ -25,6 +27,8 @@ function syncButtons(state) {
         playBtn.querySelector('[data-icon=pause]').classList.toggle('hidden', !playing);
         playBtn.querySelector('[data-icon=play]').classList.toggle('hidden', playing);
     }
+    const slider = document.getElementById('volumeSlider');
+    if (slider) slider.value = String(muted ? 0 : volume);
     if (muteBtn) {
         muteBtn.setAttribute('aria-label', muted ? 'Ativar som' : 'Desativar som');
         muteBtn.setAttribute('aria-pressed', String(!muted));
@@ -33,9 +37,19 @@ function syncButtons(state) {
     }
 }
 
+// Sem legendas: o YouTube liga as automáticas sozinho quando o vídeo está mudo,
+// então o módulo de legendas é descarregado sempre que um clipe começa a tocar
+function hideCaptions() {
+    try {
+        player.unloadModule('captions');
+        player.unloadModule('cc');
+    } catch { /* nem todo vídeo tem legendas */ }
+}
+
 function onStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         try { player.setPlaybackQuality('highres'); } catch { /* qualidade é só uma sugestão */ }
+        hideCaptions();
     }
     if (event.data === YT.PlayerState.ENDED) onEnded();
     if (event.data === YT.PlayerState.PLAYING) {
@@ -60,7 +74,7 @@ window.onYouTubeIframeAPIReady = () => {
         height: '100%',
         width: '100%',
         host: 'https://www.youtube-nocookie.com',
-        playerVars: { autoplay: 1, rel: 0, modestbranding: 1, controls: 0, playsinline: 1, fs: 0, disablekb: 1, iv_load_policy: 3 },
+        playerVars: { autoplay: 1, rel: 0, modestbranding: 1, controls: 0, playsinline: 1, fs: 0, disablekb: 1, iv_load_policy: 3, cc_load_policy: 0, cc_lang_pref: 'none' },
         events: { onReady: onReady, onStateChange: onStateChange }
     });
 };
@@ -76,6 +90,7 @@ export function showVideo({ id, title }) {
 
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ videoId: id, startSeconds: 0 });
+        player.setVolume(volume);
         if (muted) player.mute(); else player.unMute();
         player.playVideo();
     } else {
@@ -92,6 +107,20 @@ export function togglePlay() {
 export function toggleMute() {
     if (!player || typeof player.mute !== 'function') return;
     muted = !muted;
+    if (!muted && volume === 0) volume = 50; // desmutar com a barra no zero voltaria mudo
+    applySound();
+}
+
+// Barra de volume: arrastar até o zero muta, subir dela desmuta
+export function setVolume(value) {
+    volume = Math.min(100, Math.max(0, Math.round(value) || 0));
+    muted = volume === 0;
+    if (!player || typeof player.setVolume !== 'function') return;
+    applySound();
+}
+
+function applySound() {
+    player.setVolume(volume);
     if (muted) player.mute(); else player.unMute();
     syncButtons(player.getPlayerState());
 }

@@ -10,6 +10,8 @@
 //   --max-videos=80      quantidade máxima na lista final
 //   --pages=2            páginas de resultado por consulta (cada página custa 100 de cota)
 //   --require=fallen     o título precisa conter este texto ("--require=" desliga o filtro)
+//
+// Shorts (verticais) são sempre descartados.
 import { writeFile } from 'node:fs/promises';
 
 const apiKey = process.env.YT_API_KEY;
@@ -99,12 +101,30 @@ for (let i = 0; i < all.length; i += 50) {
     details.push(...(data.items || []));
 }
 
-const videos = details
+// Shorts são verticais e ficam com barras pretas nas laterais no site.
+// youtube.com/shorts/ID responde 200 para shorts e redireciona os vídeos normais.
+async function isShort(id) {
+    try {
+        const res = await fetch(`https://www.youtube.com/shorts/${id}`, { method: 'HEAD', redirect: 'manual' });
+        return res.status === 200;
+    } catch {
+        return true; // na dúvida, fica de fora
+    }
+}
+
+const filtered = details
     .filter(v => VIDEO_ID.test(v.id))
     .filter(v => v.status?.embeddable === true)
     .filter(v => isoDurationToSeconds(v.contentDetails.duration) <= MAX_SECONDS)
-    .filter(v => !REQUIRE || String(v.snippet.title).toLowerCase().includes(REQUIRE))
-    .slice(0, MAX_VIDEOS)
+    .filter(v => !REQUIRE || String(v.snippet.title).toLowerCase().includes(REQUIRE));
+
+const notShort = [];
+for (const v of filtered) {
+    if (notShort.length >= MAX_VIDEOS) break;
+    if (!(await isShort(v.id))) notShort.push(v);
+}
+
+const videos = notShort
     // Só os campos de que o site precisa: o resto da resposta da API é descartado
     .map(v => ({ id: v.id, title: String(v.snippet.title).trim().slice(0, 200) }));
 

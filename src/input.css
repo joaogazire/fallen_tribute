@@ -31,35 +31,256 @@
     }
 }
 
-/* Mira de AWP no lugar do cursor (só em dispositivos com mouse) */
+/* Mira de AWP no lugar do cursor (só em dispositivos com mouse), com uma aparência por jogo
+   (botão ao lado do volume, js/scope.js). Fora da lente o vídeo continua visível, só escurecido.
+   Cada versão ajusta as variáveis abaixo:
+   --rim-bg / --rim-blur / --rim-soft  anel em volta da lente (cor, desfoque, esmaecido da beira)
+   --edge                               sombra interna na beira da lente
+   --line                               espessura da cruz */
 .scope {
+    --lens: min(34vmin, 320px);
+    --rim-bg: rgba(0, 0, 0, 0.78);
+    --rim-blur: 2px;
+    --rim-soft: 4px;
+    --edge: calc(var(--lens) * 0.05);
+    --line: 1px;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 9999;
+    width: var(--lens);
+    height: var(--lens);
+    /* centraliza no ponteiro sem precisar medir no JS */
+    margin: calc(var(--lens) / -2) 0 0 calc(var(--lens) / -2);
     pointer-events: none;
+    /* camada própria na GPU e isolada do resto da página: mover não refaz layout nem pintura */
     will-change: transform;
-    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+    contain: layout style size;
+    backface-visibility: hidden;
 }
-.scope svg {
-    display: block;
-    transform-origin: center;
+.scope-lens {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.7),
+        inset 0 0 var(--edge) rgba(0, 0, 0, 0.55);
 }
-.scope.fire svg {
+/* Anel: escurece o vídeo em volta da lente, sem escondê-lo */
+.scope-rim {
+    --rim: calc(var(--lens) * 0.045);
+    position: absolute;
+    inset: calc(var(--rim) * -1);
+    border-radius: 50%;
+    background: var(--rim-bg);
+    -webkit-backdrop-filter: blur(var(--rim-blur)) saturate(0.6);
+    backdrop-filter: blur(var(--rim-blur)) saturate(0.6);
+    /* recorta o miolo (a lente) e esmaece a beira de fora */
+    -webkit-mask: radial-gradient(circle closest-side, transparent calc(var(--lens) / 2), #000 calc(var(--lens) / 2 + 1px), #000 calc(100% - var(--rim-soft)), transparent 100%);
+    mask: radial-gradient(circle closest-side, transparent calc(var(--lens) / 2), #000 calc(var(--lens) / 2 + 1px), #000 calc(100% - var(--rim-soft)), transparent 100%);
+}
+/* Cruz preta de ponta a ponta da lente */
+/* --gap abre um vão no cruzamento (só o CS2 usa); --line-color permite linha mais suave */
+.scope-lens::before,
+.scope-lens::after {
+    content: "";
+    position: absolute;
+    --c: var(--line-color, #000);
+    --g: var(--gap, 0px);
+}
+.scope-lens::before {
+    left: 0; right: 0; top: calc(50% - var(--line) / 2); height: var(--line);
+    background: linear-gradient(to right, var(--c) calc(50% - var(--g)), transparent calc(50% - var(--g)), transparent calc(50% + var(--g)), var(--c) calc(50% + var(--g)));
+}
+.scope-lens::after {
+    top: 0; bottom: 0; left: calc(50% - var(--line) / 2); width: var(--line);
+    background: linear-gradient(to bottom, var(--c) calc(50% - var(--g)), transparent calc(50% - var(--g)), transparent calc(50% + var(--g)), var(--c) calc(50% + var(--g)));
+}
+/* Marca central: ponto vermelho (1.6) */
+.scope-mark {
+    --mark: 0px;
+    position: absolute;
+    left: calc(50% - var(--mark) / 2);
+    top: calc(50% - var(--mark) / 2);
+    width: var(--mark);
+    height: var(--mark);
+    border-radius: 50%;
+}
+
+/* CS 1.5: sprite seco do GoldSrc, beira dura, nenhum ponto no centro e cruz mais grossa e curta,
+   terminando logo depois da última bolinha (medido de uma captura do jogo) */
+.scope[data-skin="cs15"] {
+    --rim-bg: rgba(0, 0, 0, 0.88);
+    --rim-blur: 0px;
+    --rim-soft: 1px;
+    --edge: 0px;
+    --line: 2px;
+}
+.scope[data-skin="cs15"] .scope-lens::before { left: 21.5%; right: 21.5%; }
+.scope[data-skin="cs15"] .scope-lens::after  { top: 21.5%; bottom: 21.5%; }
+/* CS 1.6: igual ao 1.5, mas com o pontinho vermelho no centro da cruz (como no 1.6/CZ) e mil-dots */
+.scope[data-skin="cs16"] .scope-mark {
+    --mark: 4px;
+    background: #ff1a1a;
+    box-shadow: 0 0 2px rgba(255, 0, 0, 0.8);
+}
+/* Mil-dots: só aparecem nas miras do 1.5 e do 1.6 (mesmo espaçamento nas duas) */
+.scope-dots {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.scope[data-skin="cs15"] .scope-dots,
+.scope[data-skin="cs16"] .scope-dots { display: block; }
+/* CS:Source: arco da luneta em degradê suave e vidro limpo com um reflexo discreto */
+.scope[data-skin="css"] {
+    --rim-bg: rgba(0, 0, 0, 0.84);
+    --rim-blur: 3px;
+    --rim-soft: 7px;
+    --edge: calc(var(--lens) * 0.09);
+}
+.scope[data-skin="css"] .scope-lens {
+    background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.07), transparent 38%);
+}
+/* CS:GO: beira bem borrada e vinheta forte */
+.scope[data-skin="csgo"] {
+    --rim-bg: rgba(0, 0, 0, 0.86);
+    --rim-blur: 6px;
+    --rim-soft: 10px;
+    --edge: calc(var(--lens) * 0.14);
+}
+.scope[data-skin="csgo"] .scope-lens {
+    -webkit-backdrop-filter: contrast(1.05) saturate(0.85);
+    backdrop-filter: contrast(1.05) saturate(0.85);
+    background: radial-gradient(circle, transparent 55%, rgba(0, 0, 0, 0.25));
+}
+/* CS2: vidro limpo, beira macia e cruz fina com vão no centro */
+.scope[data-skin="cs2"] {
+    /* linhas mais finas e que não se encontram no centro (medido de uma captura do jogo) */
+    --line-color: rgba(0, 0, 0, 0.6); /* 1px mais claro: abaixo de 1px a linha some em tela comum */
+    --gap: calc(var(--lens) * 0.01);
+    --rim-bg: rgba(0, 0, 0, 0.9);
+    --rim-blur: 4px;
+    --rim-soft: 6px;
+    --edge: calc(var(--lens) * 0.07);
+}
+
+.scope.fire > * {
     animation: scope-fire 260ms ease-out;
 }
 @keyframes scope-fire {
-    0%   { transform: scale(1); }
-    20%  { transform: scale(0.8) translateY(-6px); }
-    100% { transform: scale(1); }
+    0%, 100% { transform: none; }
+    20%      { transform: translateY(-14px); }
+}
+/* Botão de trocar a mira só faz sentido com mouse */
+@media (hover: none), (pointer: coarse) {
+    #scopeBtn { display: none; }
 }
 @media (hover: hover) and (pointer: fine) {
     html.has-scope, html.has-scope * { cursor: none !important; }
 }
 
+/* Abertura: título e timer só aparecem quando os nomes chegam (js/intro.js) */
+html.intro #title,
+html.intro #timer { opacity: 0; }
+
+/* Título do clipe: só aparece com o mouse em cima (em touch fica sempre visível) */
+@media (hover: hover) and (pointer: fine) {
+    .accent .clip-title { opacity: 0; transition: opacity 0.25s, color 0.3s; }
+    .accent .clip-title:hover { opacity: 1; }
+}
+
+/* Volume: a barra abre ao passar o mouse no controle de som (em touch fica sempre aberta) */
+.volume-slider {
+    width: 0;
+    opacity: 0;
+    margin: 0;
+    accent-color: var(--accent);
+    transition: width 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+}
+.volume:hover .volume-slider,
+.volume:focus-within .volume-slider {
+    width: 6rem;
+    opacity: 1;
+    margin: 0 0.75rem 0 0.25rem;
+}
+@media (hover: none) {
+    .volume .volume-slider { width: 6rem; opacity: 1; margin: 0 0.75rem 0 0.25rem; }
+}
+
 /* Cor de destaque que muda a cada clipe */
 .accent, .accent * { color: var(--accent); transition: color 0.3s; }
 .info-panel .accent, .info-panel a, .info-panel .script { color: var(--accent); }
+
+/* Crédito: AK-47 que dá um coice ao passar o mouse */
+.ak-credit svg { transition: transform 0.2s ease-out; transform-origin: 20% 60%; }
+.ak-credit:hover svg { transform: translateX(-6px) rotate(-4deg); }
+
+/* Botão Info: um "i" cursivo dentro de um círculo */
+.info-btn {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.info-btn .script { font-size: 2rem; line-height: 1; transform: translate(-0.04em, 0.08em); }
+.info-btn:hover { transform: scale(1.08); background: rgba(255, 255, 255, 0.15); }
+
+/* Foto de fundo do painel Info: metade de cima, sumindo no preto embaixo */
+.info-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    min-height: 18rem;
+    object-fit: cover;
+    object-position: center 25%;
+    opacity: 0.6;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+/* Botão Voltar do painel Info: fixo embaixo no centro; a área clicável é uma faixa larga */
+.close-btn {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(100%, 36rem);
+    height: 8.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 2rem;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.close-btn span {
+    padding-bottom: 0.15em;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.close-btn:hover span,
+.close-btn:focus-visible span { border-color: currentColor; transform: translateY(-3px); }
+
+/* Links do painel Info como ícones */
+.social a { display: block; transition: transform 0.2s ease, opacity 0.2s ease; }
+.social a:hover { transform: translateY(-3px) scale(1.08); }
+.social svg { width: 2.75rem; height: 2.75rem; }
+@media (min-width: 640px) { .social svg { width: 3.5rem; height: 3.5rem; } }
 
 .script {
     font-family: "Pinyon Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
