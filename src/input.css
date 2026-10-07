@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @layer base {
+    :root { --accent: #00d2ff; }
+    body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
     a:focus-visible,
     button:focus-visible {
         outline: 2px solid #00d2ff;
@@ -43,4 +45,27 @@
 }
 @media (hover: hover) and (pointer: fine) {
     html.has-scope, html.has-scope * { cursor: none !important; }
+}
+
+/* Cor de destaque que muda a cada clipe */
+.accent, .accent * { color: var(--accent); transition: color 0.3s; }
+.info-panel .accent, .info-panel a, .info-panel .script { color: var(--accent); }
+
+.script {
+    font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", "Lucida Handwriting", cursive;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+/* Painel Info sobe cobrindo a tela */
+.info-panel {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1), visibility 0s linear 0.6s;
+}
+.info-panel.open {
+    transform: translateY(0);
+    visibility: visible;
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1), visibility 0s;
 }

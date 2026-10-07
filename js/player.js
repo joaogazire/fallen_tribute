@@ -3,10 +3,17 @@ let pending = null;
 let currentVideoId = null;
 let muted = true;
 let onEnded = () => {};
+let playingWaiters = [];
 
 const matchEl = () => document.getElementById('match');
 
 export const setOnEnded = fn => { onEnded = fn; };
+// Resolve quando o vídeo começar a tocar (ou após o limite de tempo)
+export const whenPlaying = (timeout = 1500) => new Promise(resolve => {
+    const timer = setTimeout(resolve, timeout);
+    playingWaiters.push(() => { clearTimeout(timer); resolve(); });
+});
+
 export const getCurrentVideoId = () => currentVideoId;
 
 function syncButtons(state) {
@@ -31,6 +38,10 @@ function onStateChange(event) {
         try { player.setPlaybackQuality('highres'); } catch { /* qualidade é só uma sugestão */ }
     }
     if (event.data === YT.PlayerState.ENDED) onEnded();
+    if (event.data === YT.PlayerState.PLAYING) {
+        playingWaiters.forEach(resolve => resolve());
+        playingWaiters = [];
+    }
     syncButtons(event.data);
 }
 
