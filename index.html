@@ -4,17 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gabriel "FalleN" Toledo</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="tailwind.config.js"></script>
-</head>
-<body class="bg-csdark text-white h-screen overflow-hidden flex flex-col font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-csdark to-black">
+    <meta name="description" content="Contagem regressiva e highlights em homenagem a Gabriel &quot;FalleN&quot; Toledo, o Verdadeiro, lenda do Counter-Strike.">
+    <meta name="theme-color" content="#0f0f13">
 
-    <main class="flex-grow flex flex-col items-center justify-center w-full max-w-5xl mx-auto px-4 py-12 pb-[10vh]">
-        
-        <div class="text-center mb-10">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Gabriel &quot;FalleN&quot; Toledo">
+    <meta property="og:description" content="Contagem regressiva e highlights em homenagem a Gabriel &quot;FalleN&quot; Toledo, o Verdadeiro.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Gabriel &quot;FalleN&quot; Toledo">
+    <meta name="twitter:description" content="Contagem regressiva e highlights em homenagem a Gabriel &quot;FalleN&quot; Toledo, o Verdadeiro.">
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-csdark text-white min-h-screen flex flex-col font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-csdark to-black">
+
+    <main class="flex-grow flex flex-col items-center justify-center w-full max-w-5xl mx-auto px-4 pt-8 pb-24">
+
+        <div class="text-center mb-8">
             <h1 class="text-4xl md:text-6xl font-extrabold uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-csblue to-blue-500 mb-2 drop-shadow-lg">
                 Gabriel "FalleN" Toledo
             </h1>
@@ -23,51 +32,64 @@
             </p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-4 md:gap-6 mb-12">
-            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 flex flex-col items-center justify-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
-                <span class="text-3xl md:text-5xl font-bold text-csblue" id="days">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-500 mt-2 font-semibold">Dias</span>
+        <div role="timer" aria-label="Contagem regressiva até 20 de dezembro de 2026" class="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
+                <span class="block text-3xl md:text-5xl font-bold text-csblue" id="days">00</span>
+                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Dias</span>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
                 <span class="block text-3xl md:text-5xl font-bold text-csblue" id="hours">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-500 mt-2 font-semibold">Horas</span>
+                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Horas</span>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
                 <span class="block text-3xl md:text-5xl font-bold text-csblue" id="minutes">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-500 mt-2 font-semibold">Minutos</span>
+                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Minutos</span>
             </div>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 w-24 md:w-32 text-center backdrop-blur-md shadow-2xl transition hover:border-csblue/50">
                 <span class="block text-3xl md:text-5xl font-bold text-csblue" id="seconds">00</span>
-                <span class="block text-xs md:text-sm uppercase text-gray-500 mt-2 font-semibold">Segundos</span>
+                <span class="block text-xs md:text-sm uppercase text-gray-400 mt-2 font-semibold">Segundos</span>
             </div>
         </div>
+        <p id="countdown-message" role="status" hidden class="text-csblue text-xl md:text-2xl font-bold uppercase tracking-widest mb-8 -mt-4">
+            Hoje é o dia!
+        </p>
 
-        <div class="w-full max-w-4xl relative pb-[50.25%] rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-white/10 ring-1 ring-white/5">
+        <p id="match" class="text-gray-300 text-sm md:text-base text-center mb-3 max-w-4xl" aria-live="polite"></p>
+
+        <div class="w-full max-w-4xl relative aspect-video rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.6)] border border-white/10 ring-1 ring-white/5">
             <div id="videoPlayer" class="absolute top-0 left-0 w-full h-full"></div>
-            <button id="nextVideoBtn" onclick="playNextVideo()" class="absolute right-3 bottom-3 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm backdrop-blur-md">
-                <i class="fa-solid fa-forward"></i>
-                Próximo
-            </button>
+            <div class="absolute left-3 bottom-3 right-3 flex items-center gap-2">
+                <button id="playPauseBtn" type="button" aria-label="Pausar vídeo" class="bg-black/40 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
+                    <svg data-icon="pause" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                    <svg data-icon="play" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
+                </button>
+                <button id="muteBtn" type="button" aria-label="Ativar som" aria-pressed="false" class="bg-black/40 hover:bg-white/20 text-white p-2 rounded-lg backdrop-blur-md">
+                    <svg data-icon="muted" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg>
+                    <svg data-icon="sound" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
+                </button>
+                <button id="nextVideoBtn" type="button" class="ml-auto bg-black/40 hover:bg-white/20 disabled:opacity-50 text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm backdrop-blur-md">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4l11 8-11 8zM17 4h3v16h-3z"/></svg>
+                    Próximo
+                </button>
+            </div>
         </div>
     </main>
 
-    <footer class="fixed bottom-0 left-0 w-full h-[05vh] border-t border-gray-800 bg-gray-950/90 backdrop-blur-md relative z-50">
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-6">
-            <a href="https://www.youtube.com/@fallenINSIDER" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#FF0000] transition-colors text-3xl md:text-4xl transform hover:scale-110 duration-200">
-                <i class="fa-brands fa-youtube"></i>
+    <footer class="fixed bottom-0 left-0 w-full h-14 border-t border-gray-800 bg-gray-950/90 backdrop-blur-md z-50 grid grid-cols-3 items-center px-4">
+        <div></div>
+        <nav aria-label="Links externos" class="flex items-center justify-center gap-6">
+            <a href="https://www.youtube.com/@fallenINSIDER" target="_blank" rel="noopener noreferrer" aria-label="Canal do FalleN no YouTube" class="text-gray-400 hover:text-[#FF0000] transition-colors transform hover:scale-110 duration-200">
+                <svg class="w-8 h-8 md:w-9 md:h-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
             </a>
-            <a href="https://www.hltv.org/player/2023/fallen" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-[#2a629c] transition-colors text-base md:text-lg font-bold transform hover:scale-110 duration-200">
+            <a href="https://www.hltv.org/player/2023/fallen" target="_blank" rel="noopener noreferrer" aria-label="Perfil do FalleN na HLTV" class="text-gray-400 hover:text-[#2a629c] transition-colors text-base md:text-lg font-bold transform hover:scale-110 duration-200">
                 HLTV
             </a>
-        </div>
-        <div class="absolute right-6 top-1/2 -translate-y-1/2 text-right">
-            <div class="text-gray-500 text-xs md:text-sm font-mono tracking-tight">
-                made by <a href="https://github.com/joaogazire" target="_blank" class="text-csblue hover:underline">@joaogazire</a>
-            </div>
+        </nav>
+        <div class="text-right text-gray-400 text-xs md:text-sm font-mono tracking-tight">
+            made by <a href="https://github.com/joaogazire" target="_blank" rel="noopener noreferrer" class="text-csblue hover:underline">@joaogazire</a>
         </div>
     </footer>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
