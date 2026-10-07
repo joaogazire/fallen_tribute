@@ -1,0 +1,26 @@
+name: Security
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 12 * * 1'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      # Dependências de produção: nenhuma vulnerabilidade tolerada
+      - run: npm audit --omit=dev --audit-level=low
+      # styles.css precisa estar em dia com o código-fonte
+      - run: npm run build:css && git diff --exit-code styles.css
+      # Falha se algo parecido com uma chave real entrar no repositório
+      - run: |
+          if git grep -nE 'AIza[0-9A-Za-z_-]{35}|ghp_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{32,}|-----BEGIN [A-Z ]*PRIVATE KEY-----' -- . ':!package-lock.json'; then
+            echo "Possível segredo encontrado"; exit 1
+          fi
