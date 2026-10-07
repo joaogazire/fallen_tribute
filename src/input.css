@@ -1,8 +1,20 @@
+/* Pinyon Script (SIL OFL 1.1), hospedada localmente: sem requisições externas */
+@font-face {
+    font-family: "Pinyon Script";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("fonts/pinyon-script-latin-400-normal.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+    :root { --accent: #00d2ff; }
+    body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
     a:focus-visible,
     button:focus-visible {
         outline: 2px solid #00d2ff;
@@ -17,4 +29,53 @@
         animation-duration: 0.01ms !important;
         transform: none !important;
     }
+}
+
+/* Mira de AWP no lugar do cursor (só em dispositivos com mouse) */
+.scope {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    will-change: transform;
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.9));
+}
+.scope svg {
+    display: block;
+    transform-origin: center;
+}
+.scope.fire svg {
+    animation: scope-fire 260ms ease-out;
+}
+@keyframes scope-fire {
+    0%   { transform: scale(1); }
+    20%  { transform: scale(0.8) translateY(-6px); }
+    100% { transform: scale(1); }
+}
+@media (hover: hover) and (pointer: fine) {
+    html.has-scope, html.has-scope * { cursor: none !important; }
+}
+
+/* Cor de destaque que muda a cada clipe */
+.accent, .accent * { color: var(--accent); transition: color 0.3s; }
+.info-panel .accent, .info-panel a, .info-panel .script { color: var(--accent); }
+
+.script {
+    font-family: "Pinyon Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+/* Painel Info sobe cobrindo a tela */
+.info-panel {
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1), visibility 0s linear 0.6s;
+}
+.info-panel.open {
+    transform: translateY(0);
+    visibility: visible;
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.2, 1), visibility 0s;
 }
